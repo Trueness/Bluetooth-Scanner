@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="sampleapp.prempoint.bluetoothscanner.MainActivity">
+    tools:context="sampleapp.prempoint.bluetoothscanner.activity.MainActivity">
 
     <TextView
         android:layout_width="wrap_content"
@@ -16,3 +16,4 @@
         app:layout_constraintTop_toTopOf="parent" />
 
 </android.support.constraint.ConstraintLayout>
+
