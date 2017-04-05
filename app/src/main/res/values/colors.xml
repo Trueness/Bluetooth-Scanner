@@ -3,4 +3,9 @@
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
+
+    <color name="button_start_scan_text_color">#FFFFFF</color>
+    <color name="button_start_scan_background_color">#00abfb</color>
+    <color name="button_scanning_background_color">#c5d772</color>
+    <color name="button_scanning_color">#ececed</color>
 </resources>

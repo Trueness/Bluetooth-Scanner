@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">Bluetooth Scanner</string>
-    <string name="btnStartScan"> Start Scan</string>
+    <string name="btn_start_scan">Start Scan</string>
+    <string name="btn_scanning">Scanning</string>
 </resources>

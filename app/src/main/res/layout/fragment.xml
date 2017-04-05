@@ -1,12 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
     android:layout_height="match_parent">
+
+
     <Button
-        android:layout_width="wrap_content"
+        android:layout_width="140dp"
         android:layout_height="wrap_content"
-        android:text="Start Scan"
-        android:id="@+id/btnStartScan"
-        />
-</FrameLayout>
+        android:text="@string/btn_start_scan"
+        android:layout_marginEnd="32dp"
+        android:layout_marginTop="32dp"
+        android:id="@+id/btn_start_scan"
+        android:textColor="#ffffff"
+        android:background="@drawable/btn_start_scan_attributes"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:clickable="true"/>
+
+
+    <ListView
+        android:layout_width="match_parent"
+        android:layout_height="350dp"
+        android:layout_below="@+id/btn_start_scan"
+        android:layout_marginTop="18dp"
+        android:layout_marginStart="18dp"
+        android:id="@+id/list_scanning_results"/>
+
+</RelativeLayout>

@@ -19,9 +19,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         //setContentView(R.layout.activity_main);
-        setContentView(R.layout.fragment);
+        setContentView(R.layout.activity_main);
 
-        Button clickButton = (Button) findViewById(R.id.btnStartScan);
+        Button clickButton = (Button) findViewById(R.id.btn_start_scan);
 
         context = this.getApplicationContext();
 
