@@ -3,12 +3,9 @@ package sampleapp.prempoint.bluetoothscanner.bluetooth;
 import android.app.Activity;
 import android.app.Service;
 import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothManager;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.util.Log;
@@ -38,6 +35,8 @@ public class BLEService extends Service {
     Activity mActivity;
 
     /**
+     *
+     *
      * Constructor
      */
     /*
@@ -49,6 +48,10 @@ public class BLEService extends Service {
 
     }
     */
+
+
+
+
     @Override
     public void onCreate() {
 
@@ -62,7 +65,20 @@ public class BLEService extends Service {
 
         initializeBLeAdapter();
         determineBLeEnablement();
-        StartBLEDiscovery();
+
+        BLEReceiver bleReceiver = new BLEReceiver();
+        String a = bleReceiver.getResultData();
+
+        /* Does not work
+        Intent i = new Intent(getApplicationContext(), BLEReceiver.class);
+        i.putExtra("scanBle", true);
+
+        // i.putExtra("scanWifi", false);
+        startService(i);
+        */
+
+
+       // StartBLEDiscovery();
 
     }
 
@@ -82,6 +98,7 @@ public class BLEService extends Service {
             Toast.makeText(getApplicationContext(), "Please Enable Bluetooth", Toast.LENGTH_LONG).show();
         }
     }
+    /*
  public void StartBLEDiscovery() {
      final BroadcastReceiver mReceiver = new BroadcastReceiver() {
          @Override
@@ -104,6 +121,8 @@ public class BLEService extends Service {
      IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
      getApplication().registerReceiver(mReceiver, filter);
  }
+ */
+
 
 
 
