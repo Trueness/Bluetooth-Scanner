@@ -27,41 +27,34 @@ package sampleapp.prempoint.bluetoothscanner.activity;
 /*
 *Import classes
  */
-import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothManager;
-import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
+
 import sampleapp.prempoint.bluetoothscanner.R;
 import sampleapp.prempoint.bluetoothscanner.fragment.BLEReceiverFragment;
 
 /*
 *Class name MainActivity.java
  */
+@SuppressWarnings("ClassWithoutLogger")
 public class MainActivity extends AppCompatActivity {
 
-    /*
-*Constructor objects(variables)
- */
-    Context context;
-    private BluetoothAdapter bluetoothAdapter;
-    public BluetoothManager bluetoothManager;
 
     @Override
     /*
-    *Method that creates
+     * Creates the layout activity_main
      */
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         /*
-        *setContentView command displays the activity_main layout file that is located in resource layout folder
+        * Displays the activity_main layout xml  file
          */
         setContentView(R.layout.activity_main);
 
         /*
-        * sharing memory for a new object, creates and commits a fragment transaction
+        * commits scanFragment transaction
          */
         BLEReceiverFragment blescanFragment = BLEReceiverFragment.newInstance();
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();

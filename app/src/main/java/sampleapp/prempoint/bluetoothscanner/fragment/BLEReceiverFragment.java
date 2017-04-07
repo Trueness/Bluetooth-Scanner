@@ -43,7 +43,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ListView;
-
 import sampleapp.prempoint.bluetoothscanner.R;
 import sampleapp.prempoint.bluetoothscanner.bluetooth.BLEService;
 import sampleapp.prempoint.bluetoothscanner.device.BLEDeviceContainer;
@@ -51,19 +50,22 @@ import sampleapp.prempoint.bluetoothscanner.device.BLEDeviceSummary;
 
 
 /*
-*BLEReceiverFragment.java class name
+*Class name BLEReceiverFragment.java
  */
+@SuppressWarnings("ClassWithoutLogger")
 public class BLEReceiverFragment extends Fragment implements View.OnClickListener{
 
+    /*
+        * Constructor objects(variables)
+        */
+    private View view;
+    private ListView list_Results;
+    private Button scanButton;
 
-    View view;
-    ListView mList_Results;
-    Button scanButton;
-
-    private BluetoothAdapter bleAdapter;
+    private BluetoothAdapter bluetoothAdapter;
     private BLEDeviceContainer bleDeviceAdapter;
-    private int deviceScanTime= 15000;
-    private BroadcastReceiver receiver = new BroadcastReceiver() {
+    private final int deviceScanTime= 15000;
+    private final BroadcastReceiver receiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             Bundle bundle = intent.getExtras();
@@ -98,7 +100,7 @@ public class BLEReceiverFragment extends Fragment implements View.OnClickListene
         super.onResume();
 
         bleDeviceAdapter = new BLEDeviceContainer((LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE));
-        mList_Results.setAdapter( bleDeviceAdapter);
+        list_Results.setAdapter( bleDeviceAdapter);
 
         getActivity().registerReceiver(receiver, new IntentFilter(BLEService.NOTIFICATION));
     }
@@ -114,18 +116,18 @@ public class BLEReceiverFragment extends Fragment implements View.OnClickListene
     }
 
     /**
-     * The Fragment's UI
+     * The Fragment's User Interface
      */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         view = inflater.inflate(R.layout.fragment, container, false);
-        mList_Results = (ListView) view.findViewById(R.id.list_scanning_results);
+        list_Results = (ListView) view.findViewById(R.id.list_scanning_results);
         scanButton = (Button) view.findViewById(R.id.btn_start_scan);
         scanButton.setOnClickListener(this);
 
         final BluetoothManager bluetoothManager = (BluetoothManager) getActivity().getSystemService(Context.BLUETOOTH_SERVICE);
-        bleAdapter= bluetoothManager.getAdapter();
+        bluetoothAdapter= bluetoothManager.getAdapter();
 
         return view;
     }
@@ -145,13 +147,13 @@ public class BLEReceiverFragment extends Fragment implements View.OnClickListene
         bleDeviceAdapter.notifyDataSetChanged();
 
 
-        final Intent bleIntent = new Intent(getActivity(), BLEService.class);
-        getActivity().startService(bleIntent);
+        final Intent bluetoothIntent = new Intent(getActivity(), BLEService.class);
+        getActivity().startService(bluetoothIntent);
 
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                getActivity().stopService(bleIntent);
+                getActivity().stopService(bluetoothIntent);
                 scanButton.setBackgroundResource(R.drawable.btn_start_scan_attributes);
                 scanButton.setText(R.string.btn_start_scan);
                 scanButton.setTextColor(ContextCompat.getColor(getContext(), R.color.button_start_scan_text_color));
@@ -173,8 +175,8 @@ public class BLEReceiverFragment extends Fragment implements View.OnClickListene
         * isEnable method returns true if adapter is enabled
         *
          */
-    public void determineBLeEnablement() {
-        if (bleAdapter == null || !bleAdapter.isEnabled()) {
+      private void determineBLeEnablement() {
+        if (bluetoothAdapter == null || !bluetoothAdapter.isEnabled()) {
             Intent enableBtIntent = new Intent(android.bluetooth.BluetoothAdapter.ACTION_REQUEST_ENABLE);
             enableBtIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(enableBtIntent);

@@ -38,6 +38,7 @@ import sampleapp.prempoint.bluetoothscanner.R;
 /*
  * Class name BLEDeviceContainer.java
  */
+
  public class BLEDeviceContainer extends BaseAdapter{
 
 /*
@@ -45,15 +46,17 @@ import sampleapp.prempoint.bluetoothscanner.R;
  */
     private ArrayList<BLEDeviceSummary> listDevices;
 
-    public LayoutInflater inflater;
+    private final LayoutInflater inflater;
 
  /*
   *TextView content
  */
-    TextView bleDeviceName, rSSILevel,hexValue;
+    private TextView bleDeviceName;
+    private TextView rSSILevel;
+    private TextView hexValue;
 
     /*
-    *Instantiate  the list_reults layout XML file
+    *Instantiate the BLEDeviceSummary
      */
   public BLEDeviceContainer(LayoutInflater inflater) {
         this.inflater = inflater;
@@ -75,7 +78,7 @@ import sampleapp.prempoint.bluetoothscanner.R;
     }
 
     /*
-    *The getcount returns the number of items in the array list from BLEDeviceSummary
+    *The getCount returns the number of items in the array list from BLEDeviceSummary
      */
     @Override
     public int getCount() {
@@ -118,14 +121,17 @@ import sampleapp.prempoint.bluetoothscanner.R;
         /*
         *The SetText( ) accepts a string of data for display from the list_results layout
          */
-        //= (TextView) view.findViewById(R.id.btn_start_scan);
-        bleDeviceName.setText("Name: " + device.getName());
-       // bleDeviceName.setText("Name: " + device.getName().getName());
+        if(device.getName() !=null) {
+            bleDeviceName.setText("Device Name: " + device.getName());
+        }else{
+            bleDeviceName.setText("Device name was not discovered");
+        }
+
         rSSILevel.setText("RSSI: " + device.getRssi());
         hexValue.setText("Scan Record: " + device.getRecord());
 
-/*
-        * The scanning button returns the list_results from the layout XML file
+       /*
+        * The scanning button returns the list_results from the device
          */
         return view;
     }

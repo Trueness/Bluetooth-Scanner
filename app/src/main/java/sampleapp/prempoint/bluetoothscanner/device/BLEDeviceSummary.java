@@ -32,10 +32,14 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 /*
- *  BLEDeviceSummary.java class
+ * Class name BLEDeviceSummary.java
  */
+@SuppressWarnings("ClassWithoutLogger")
 public class BLEDeviceSummary implements Parcelable{
 
+    /*
+    * Constructor objects(variables)
+    */
     private BluetoothDevice name;
     private String rssi;
     private String record;
@@ -67,13 +71,12 @@ public class BLEDeviceSummary implements Parcelable{
  *The getters and setters
  */
 
-    public BluetoothDevice getName() {
-        return name;
+    public String getName() {
+        return name.getName();
     }
 
     public void setName(BluetoothDevice name) {
         this.name = name;
-        //this.name = name.getName();
     }
 
     String getRssi() {
@@ -102,8 +105,7 @@ public class BLEDeviceSummary implements Parcelable{
      */
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-         dest.writeParcelable(name, flags);
-        //dest.writeString(name);
+        dest.writeParcelable(name, flags);
         dest.writeString(rssi);
         dest.writeString(record);
     }

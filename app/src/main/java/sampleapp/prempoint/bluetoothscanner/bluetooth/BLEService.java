@@ -18,7 +18,6 @@ Tapping again will clear the ListView results and start over.
  */
 
 
-
 /*
 *Package name
  */
@@ -41,16 +40,18 @@ import android.support.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import sampleapp.prempoint.bluetoothscanner.device.BLEDeviceSummary;
+import static sampleapp.prempoint.bluetoothscanner.utilities.BLEUtilities.convertBytesToHexString;
 
 
 /*
 *Class name BLEService.java
  */
+@SuppressWarnings("ClassWithoutLogger")
 public class BLEService extends Service {
 
-    private BluetoothAdapter mBluetoothAdapter;
+    private BluetoothAdapter bluetoothAdapter;
     public static final String NOTIFICATION = "sampleapp.prempoint.bluetoothscanner.bluetooth";
-    List<BluetoothDevice> mList;    //ArrayList holds unique devices
+    private List<BluetoothDevice> deviceList;
 
     @Nullable
     @Override
@@ -62,24 +63,11 @@ public class BLEService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-        mList = new ArrayList<>();
+        deviceList = new ArrayList<>();
 
         final BluetoothManager bluetoothManager =
                 (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
-        mBluetoothAdapter = bluetoothManager.getAdapter();
-
-        /*
-        *This method enables to turn on the bluetooth when the Start Scan button is clicked
-        * isEnable method returns true if adapter is enabled
-        *
-         */
-       /*
-        if (mBluetoothAdapter == null || !mBluetoothAdapter.isEnabled()) {
-            Intent enableBtIntent = new Intent(android.bluetooth.BluetoothAdapter.ACTION_REQUEST_ENABLE);
-            enableBtIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            startActivity(enableBtIntent);
-        }
-        */
+        bluetoothAdapter = bluetoothManager.getAdapter();
 
 
         /*
@@ -92,7 +80,7 @@ public class BLEService extends Service {
          */
             @Override
             public void run() {
-                mBluetoothAdapter.startLeScan(mLeScanCallback);
+                bluetoothAdapter.startLeScan(bleScanCallback);
             }
         }).start();
     }
@@ -101,7 +89,7 @@ public class BLEService extends Service {
     /*
     * The broadcastUpdate provides the RSSI singal strength and the HEX scan result from the BLEDeviceSummary
      */
-    private void broadcastUpdate(BLEDeviceSummary device) {
+    private void updateBroadcast(BLEDeviceSummary device) {
         final Intent intent = new Intent(NOTIFICATION);
         intent.putExtra("device", device);
         sendBroadcast(intent);
@@ -109,41 +97,30 @@ public class BLEService extends Service {
     /*
     * If a new device is detected this method calls broadcastUpdate.
      */
-    private BluetoothAdapter.LeScanCallback mLeScanCallback = new BluetoothAdapter.LeScanCallback() {
+    private final BluetoothAdapter.LeScanCallback bleScanCallback = new BluetoothAdapter.LeScanCallback() {
         @Override
         public void onLeScan(final BluetoothDevice device, final int rssi, final byte[] scanRecord) {
-            if(!mList.contains(device)) {
-                mList.add(device);
+            if(!deviceList.contains(device)) {
+                deviceList.add(device);
 
                 BLEDeviceSummary bleDevice = new BLEDeviceSummary();
                 bleDevice.setName(device);
                 bleDevice.setRssi(String.valueOf(rssi));
-                bleDevice.setRecord(bytesToHexString(scanRecord));
+                bleDevice.setRecord(convertBytesToHexString(scanRecord));
 
-                broadcastUpdate(bleDevice);
+                updateBroadcast(bleDevice);
             }
         }
     };
 
-    /*
-    *The scan results is converted into hexadecimals.
-     */
 
-    //from: http://javarevisited.blogspot.com/2013/03/convert-and-print-byte-array-to-hex-string-java-example-tutorial.html
-    public static String bytesToHexString(byte[] bytes){
-        StringBuilder sb = new StringBuilder();
-        for(byte b : bytes){
-            sb.append(String.format("%02x", b&0xff));
-        }
-        return sb.toString();
-    }
 
     /*
-    *This method ends the activity.
+    *This method ends the device from scanning
      */
     @Override
     public void onDestroy() {
         super.onDestroy();
-        mBluetoothAdapter.stopLeScan(mLeScanCallback);
+        bluetoothAdapter.stopLeScan(bleScanCallback);
     }
 }
