@@ -1,145 +1,149 @@
+/*
+Created by Jacklyn Brown
+Application title: Bluetooth-Scanner
+Purpose: This application is a bluetooth scanner that picks up signal strength and displays the scan results.
+The app displays a title, a rounded corner button when click changes the background color
+and text color.
+
+
+Create a single activity app with a fragment for the UI
+Show a single button at the top right, background color #00abfb, rounded corners, that initially
+says “Start Scan” in white letters. Tapping the button will do the following:
+Change button background to #c5d772, text to “Scanning”, text color #ececed, and make it not tappable
+Start a BLE scan (please implement BLE scanner in a service that returns results via local broadcast)
+Results should be shown in a ListView in the fragment showing: Device’s bluetooth name
+RSSI signal strength Hex representation of the scan record
+After 15 seconds, the scan will stop and the button will be changed back to “Start Scan” and enabled
+Tapping again will clear the ListView results and start over.
+ */
+
+
+
+/*
+*Package name
+ */
+
 package sampleapp.prempoint.bluetoothscanner.bluetooth;
 
-import android.app.Activity;
+
+
+/*
+*Import classes
+ */
 import android.app.Service;
 import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
-import android.util.Log;
-import android.widget.Toast;
+import java.util.ArrayList;
+import java.util.List;
+import sampleapp.prempoint.bluetoothscanner.device.BLEDeviceSummary;
 
-/**
- * Description:
- *
- * @author
+
+/*
+*Class name BLEService.java
  */
-
-//TODO: 1. Use a broadcast receiver to returm the results (Ref PP 237 APC)
-//TODO:    1.a Also Ref: https://developer.android.com/guide/topics/connectivity/bluetooth-le.html
-//TODO:      https://android.googlesource.com/platform/development/+/512ea9b6f8cc75ec74a7ab8d1c38dec201667f1e/samples/BluetoothHDP/src/com/example/bluetooth/health?autodive=0/
-//TODO: 2. Expose the Following Parameters (Maybe as a Model Class):
-//TODO     a. Device’s bluetooth name
-//TODO     b. RSSI signal strength
-//TODO     c. Hex representation of the scan record
-
 public class BLEService extends Service {
 
-    private Context mCtx;
-    private BluetoothAdapter bluetoothAdapter;
-    public BluetoothManager bluetoothManager;
-    private final static int REQUEST_ENABLE_BT = 1;
-
-    Activity mActivity;
-
-    /**
-     *
-     *
-     * Constructor
-     */
-    /*
-    public BLEService (Context context,Activity activity){
-        activity = mActivity;
-        mCtx =context;
-        initializeBLeAdapter();
-        determineBLeEnablement();
-
-    }
-    */
-
-
-
-
-    @Override
-    public void onCreate() {
-
-        Log.v("BLE Service Starting", "--");
-        super.onCreate();
-
-        //activity = mActivity;
-        // mCtx =context;
-
-        mCtx = this.getApplicationContext();
-
-        initializeBLeAdapter();
-        determineBLeEnablement();
-
-        BLEReceiver bleReceiver = new BLEReceiver();
-        String a = bleReceiver.getResultData();
-
-        /* Does not work
-        Intent i = new Intent(getApplicationContext(), BLEReceiver.class);
-        i.putExtra("scanBle", true);
-
-        // i.putExtra("scanWifi", false);
-        startService(i);
-        */
-
-
-       // StartBLEDiscovery();
-
-    }
-
-    /*
-     * This method initializes the BLE Adapter
-     */
-    public void initializeBLeAdapter() {
-        // Initializes Bluetooth adapter.
-        bluetoothManager = (BluetoothManager) mCtx.getSystemService(Context.BLUETOOTH_SERVICE);
-        bluetoothAdapter = bluetoothManager.getAdapter();
-    }
-
-    public void determineBLeEnablement() {
-        if (bluetoothAdapter == null || !bluetoothAdapter.isEnabled()) {
-            Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-            //  mActivity.startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
-            Toast.makeText(getApplicationContext(), "Please Enable Bluetooth", Toast.LENGTH_LONG).show();
-        }
-    }
-    /*
- public void StartBLEDiscovery() {
-     final BroadcastReceiver mReceiver = new BroadcastReceiver() {
-         @Override
-         public void onReceive(Context context, Intent intent) {
-             String action = intent.getAction();
-
-             // When discovery finds a device
-             if (BluetoothDevice.ACTION_FOUND.equals(action)) {
-                 // Get the BluetoothDevice object from the intent
-                // BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-
-                // if(intent.hasExtra("scanBle")) {
-                     BluetoothDevice device = intent.getParcelableExtra("scanBle");
-               //  }
-                 Log.v("BlueTooth Testing", device.getName() + "\n"
-                         + device.getAddress());
-             }
-         }
-     };
-     IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
-     getApplication().registerReceiver(mReceiver, filter);
- }
- */
-
-
-
-
-   // bluetoothAdapter.startDiscovery();
-
-
-        //Intent receivers below
-    protected void onHandleIntent(Intent intent) {
-
-        boolean scanWifi = intent.getBooleanExtra("scanBle", true);
-    }
+    private BluetoothAdapter mBluetoothAdapter;
+    public static final String NOTIFICATION = "sampleapp.prempoint.bluetoothscanner.bluetooth";
+    List<BluetoothDevice> mList;    //ArrayList holds unique devices
 
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
-        boolean scanWifi = intent.getBooleanExtra("scanBle", true);
         return null;
     }
-}
 
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        mList = new ArrayList<>();
+
+        final BluetoothManager bluetoothManager =
+                (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
+        mBluetoothAdapter = bluetoothManager.getAdapter();
+
+        /*
+        *This method enables to turn on the bluetooth when the Start Scan button is clicked
+        * isEnable method returns true if adapter is enabled
+        *
+         */
+       /*
+        if (mBluetoothAdapter == null || !mBluetoothAdapter.isEnabled()) {
+            Intent enableBtIntent = new Intent(android.bluetooth.BluetoothAdapter.ACTION_REQUEST_ENABLE);
+            enableBtIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(enableBtIntent);
+        }
+        */
+
+
+        /*
+        * The Runnable is an interface that provides the Start Scan button to run.
+         */
+        new Thread(new Runnable() {
+
+        /*
+        *Run() moves the current Thread into the background
+         */
+            @Override
+            public void run() {
+                mBluetoothAdapter.startLeScan(mLeScanCallback);
+            }
+        }).start();
+    }
+
+
+    /*
+    * The broadcastUpdate provides the RSSI singal strength and the HEX scan result from the BLEDeviceSummary
+     */
+    private void broadcastUpdate(BLEDeviceSummary device) {
+        final Intent intent = new Intent(NOTIFICATION);
+        intent.putExtra("device", device);
+        sendBroadcast(intent);
+    }
+    /*
+    * If a new device is detected this method calls broadcastUpdate.
+     */
+    private BluetoothAdapter.LeScanCallback mLeScanCallback = new BluetoothAdapter.LeScanCallback() {
+        @Override
+        public void onLeScan(final BluetoothDevice device, final int rssi, final byte[] scanRecord) {
+            if(!mList.contains(device)) {
+                mList.add(device);
+
+                BLEDeviceSummary bleDevice = new BLEDeviceSummary();
+                bleDevice.setName(device);
+                bleDevice.setRssi(String.valueOf(rssi));
+                bleDevice.setRecord(bytesToHexString(scanRecord));
+
+                broadcastUpdate(bleDevice);
+            }
+        }
+    };
+
+    /*
+    *The scan results is converted into hexadecimals.
+     */
+
+    //from: http://javarevisited.blogspot.com/2013/03/convert-and-print-byte-array-to-hex-string-java-example-tutorial.html
+    public static String bytesToHexString(byte[] bytes){
+        StringBuilder sb = new StringBuilder();
+        for(byte b : bytes){
+            sb.append(String.format("%02x", b&0xff));
+        }
+        return sb.toString();
+    }
+
+    /*
+    *This method ends the activity.
+     */
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        mBluetoothAdapter.stopLeScan(mLeScanCallback);
+    }
+}
